@@ -1,4 +1,4 @@
-// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, DIRECT FALLBACK
+// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, DIRECT PLAYER FIX
 const player = videojs('video-player', {
     html5: {
         hls: { 
@@ -162,7 +162,31 @@ function playM3U8(url) {
     }
 }
 
-// Button Handlers—Play or Direct
+// Direct Player Window - PC Fix
+function openDirectPlayer(url) {
+    const directWindow = window.open('', '_blank');
+    directWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>.m3u8 Direct Player</title>
+            <style>
+                body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
+                video { width: 100%; max-width: 800px; height: auto; background: #000; }
+            </style>
+        </head>
+        <body>
+            <video controls autoplay>
+                <source src="${url}" type="application/vnd.apple.mpegurl">
+                Your browser doesn’t support this video.
+            </video>
+        </body>
+        </html>
+    `);
+    directWindow.document.close();
+}
+
+// Button Handlers
 playBtn.addEventListener('click', () => {
     const url = urlInput.value.trim();
     console.log(`PLAY BUTTON SMASHED: ${url}`);
@@ -177,8 +201,8 @@ directBtn.addEventListener('click', () => {
         console.log("INVALID URL FOR DIRECT—NEEDS .m3u8!");
         return;
     }
-    statusEl.textContent = "Status: Opening direct in new tab—like Android!";
-    window.open(url, '_blank');
+    statusEl.textContent = "Status: Opening direct player—like Android!";
+    openDirectPlayer(url);
 });
 
 // Enter Key—Play Default
