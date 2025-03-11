@@ -1,4 +1,4 @@
-// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, DIRECT PLAYER FIXED
+// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, PROXY-POWERED DIRECT WITH DRM
 const player = videojs('video-player', {
     html5: {
         hls: { 
@@ -20,6 +20,9 @@ const urlInput = document.getElementById('url-input');
 const playBtn = document.getElementById('play-btn');
 const directBtn = document.getElementById('direct-btn');
 
+// Proxy to Smash CORS
+const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+
 // Spoof Android Chrome Headers
 function spoofAndroidFetch(url) {
     console.log(`FETCHING LIKE ANDROID: ${url}`);
@@ -29,6 +32,24 @@ function spoofAndroidFetch(url) {
             'Referer': 'https://mdiskplay.com'
         }
     });
+}
+
+// Proxy Fetch for Direct Player
+function proxyFetch(url) {
+    const proxyUrl = `${CORS_PROXY}${url}`;
+    console.log(`PROXY FETCH: ${proxyUrl}`);
+    return fetch(proxyUrl)
+        .then(res => {
+            if (!res.ok) throw new Error(`Proxy fetch got ${res.status}`);
+            return res.text();
+        })
+        .then(data => {
+            console.log(`PROXY RESPONSE: ${data.slice(0, 300)}...`);
+            return new Response(data, {
+                status: 200,
+                headers: { 'Content-Type': 'application/vnd.apple.mpegurl' }
+            });
+        });
 }
 
 // DRM - Debugged
@@ -162,7 +183,7 @@ function playM3U8(url) {
     }
 }
 
-// Direct Player Window - Fixed with HLS.js
+// Direct Player Window - Proxy-Powered with DRM
 function openDirectPlayer(url) {
     const directWindow = window.open('', '_blank');
     directWindow.document.write(`
@@ -177,21 +198,79 @@ function openDirectPlayer(url) {
             </style>
         </head>
         <body>
-            <video id="direct-player" class="video-js vjs-default-skin" controls autoplay>
-                <source src="${url}" type="application/vnd.apple.mpegurl">
-            </video>
+            <video id="direct-player" class="video-js vjs-default-skin" controls autoplay></video>
             <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
             <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
             <script>
+                const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+                function proxyFetch(url) {
+                    const proxyUrl = \`\${CORS_PROXY}\${url}\`;
+                    console.log(\`PROXY FETCH IN DIRECT: \${proxyUrl}\`);
+                    return fetch(proxyUrl)
+                        .then(res => {
+                            if (!res.ok) throw new Error(\`Proxy fetch got \${res.status}\`);
+                            return res.text();
+                        })
+                        .then(data => {
+                            console.log(\`PROXY RESPONSE: \${data.slice(0, 300)}...\`);
+                            return new Response(data, {
+                                status: 200,
+                                headers: { 'Content-Type': 'application/vnd.apple.mpegurl' }
+                            });
+                        });
+                }
+
                 if (Hls.isSupported()) {
-                    const hls = new Hls();
+                    const hls = new Hls({
+                        fetchSetup: (context, options) => proxyFetch(context.url),
+                        debug: true
+                    });
                     hls.loadSource('${url}');
                     hls.attachMedia(document.getElementById('direct-player'));
+
+                    // DRM Handling
+                    proxyFetch('${url}')
+                        .then(res => res.text())
+                        .then(manifest => {
+                            console.log(\`DIRECT MANIFEST: \${manifest.slice(0, 300)}...\`);
+                            const keyMatch = manifest.match(/#EXT-X-KEY:METHOD=AES-128,URI="([^"]+)"/);
+                            if (keyMatch) {
+                                const licenseUrl = keyMatch[1];
+                                console.log(\`DRM DETECTED - License URL: \${licenseUrl}\`);
+                                const player = videojs('direct-player');
+                                player.tech_.hlsProvider_.keySystems = {
+                                    'com.widevine.alpha': {
+                                        url: licenseUrl,
+                                        licenseHeaders: { 'Content-Type': 'application/octet-stream' },
+                                        getLicense: (emeOptions, keyMessage, callback) => {
+                                            console.log(\`FETCHING DRM LICENSE: \${licenseUrl}\`);
+                                            proxyFetch(licenseUrl)
+                                                .then(res => res.blob())
+                                                .then(data => callback(null, new Uint8Array(data)))
+                                                .catch(err => {
+                                                    console.error(\`DRM LICENSE FETCH FAILED: \${err}\`);
+                                                    callback(err);
+                                                });
+                                        }
+                                    }
+                                };
+                            } else {
+                                console.log("NO DRM DETECTED!");
+                            }
+                        })
+                        .catch(e => console.error('Direct DRM Fetch Failed:', e));
+
                     hls.on(Hls.Events.ERROR, (event, data) => {
-                        console.error('HLS Error:', data.type, data.details, data.response?.status);
+                        console.error('Direct Player HLS Error:', data.type, data.details, data.response?.status);
                     });
-                    hls.on(Hls.Events.MANIFEST_PARSED, () => console.log('Direct Player: Manifest loaded'));
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                        console.log('Direct Player: Manifest loaded');
+                    });
+                    hls.on(Hls.Events.KEY_LOADED, () => {
+                        console.log('Direct Player: DRM key loaded');
+                    });
                 } else if (document.getElementById('direct-player').canPlayType('application/vnd.apple.mpegurl')) {
+                    document.getElementById('direct-player').src = '${url}';
                     document.getElementById('direct-player').play();
                 } else {
                     console.error('Direct Player: Browser doesn’t support HLS');
