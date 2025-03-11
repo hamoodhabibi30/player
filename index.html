@@ -1,92 +1,92 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>HLS Player</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link href="https://unpkg.com/video.js/dist/video-js.css" rel="stylesheet">
-    <script src="https://unpkg.com/video.js/dist/video.js"></script>
-    <script src="https://unpkg.com/videojs-contrib-hls/dist/videojs-contrib-hls.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🔥 ANDROID CHROME .M3U8 PLAYER 🔥</title>
+    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+    <!-- Favicon to shut up the 404—optional -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='0' y='14'>🎥</text></svg>" />
     <style>
         body {
-            font-family: sans-serif;
-            background-color: #222;
+            background: #000;
             color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            font-family: 'Roboto', Arial, sans-serif;
             margin: 0;
-        }
-
-        .android-frame {
-            background-color: #000;
-            border: 2px solid #333;
-            border-radius: 10px;
-            padding: 10px;
-            width: 360px;
-            height: 566px;
-            position: relative;
+            padding: 0;
             overflow: hidden;
         }
-
+        .android-frame {
+            width: 360px;
+            height: 640px;
+            margin: 20px auto;
+            background: #fff;
+            border: 10px solid #000;
+            border-radius: 20px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+            overflow: hidden;
+            position: relative;
+        }
+        .status-bar {
+            height: 24px;
+            background: #000;
+            color: #fff;
+            font-size: 12px;
+            text-align: right;
+            padding: 5px;
+        }
         #video-player {
             width: 100%;
-            height: 100%;
+            height: calc(100% - 74px);
+            background: #000;
         }
-
-        .input-area {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
-            z-index: 10;
-            display: flex;
+        .input-container {
+            padding: 10px;
+            text-align: center;
+            background: #f5f5f5;
         }
-
         #url-input {
-            flex-grow: 1;
-            padding: 5px;
-            border: 1px solid #555;
-            background-color: #444;
-            color: #fff;
+            width: 80%;
+            padding: 8px;
+            margin: 0 auto 10px;
+            background: #ddd;
+            color: #000;
+            border: none;
             border-radius: 5px;
+            font-size: 14px;
         }
-
         #play-btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 5px 10px;
+            padding: 8px 20px;
+            background: #4285f4;
+            color: #fff;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            margin-left: 5px;
+            font-size: 14px;
+            font-weight: bold;
         }
-
+        #play-btn:hover { background: #5a95f5; }
         #status {
-            position: absolute;
-            bottom: 10px;
-            left: 10px;
-            right: 10px;
+            font-size: 12px;
+            color: #666;
             text-align: center;
-            font-size: 0.8em;
-            color: #aaa;
+            margin-top: 5px;
         }
     </style>
-    <!-- ADD THIS LINE -->
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <div class="android-frame">
-        <div class="input-area">
-            <input type="text" id="url-input" placeholder="Enter .m3u8 URL">
+        <div class="status-bar">11:25 PM | 100% 🔋</div>
+        <video id="video-player" class="video-js vjs-default-skin" controls></video>
+        <div class="input-container">
+            <input id="url-input" type="text" placeholder="Enter .m3u8 URL here">
             <button id="play-btn">PLAY</button>
+            <p id="status">Status: Enter a URL to play</p>
         </div>
-        <video id="video-player" class="video-js vjs-default-skin" controls preload="auto" data-setup='{}'></video>
-        <div id="status">Status: Enter a URL to play</div>
     </div>
+
+    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
     <script src="player.js"></script>
 </body>
 </html>
