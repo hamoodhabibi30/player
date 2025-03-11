@@ -1,4 +1,4 @@
-// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, NO PROXIES, UI ENHANCED
+// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, DIRECT FALLBACK
 const player = videojs('video-player', {
     html5: {
         hls: { 
@@ -11,13 +11,14 @@ const player = videojs('video-player', {
     controls: true,
     autoplay: false,
     width: 360,
-    height: 316, // Half of 640 - 24 (status bar)
+    height: 316,
     errorDisplay: false
 });
 
 const statusEl = document.getElementById('status');
 const urlInput = document.getElementById('url-input');
 const playBtn = document.getElementById('play-btn');
+const directBtn = document.getElementById('direct-btn');
 
 // Spoof Android Chrome Headers
 function spoofAndroidFetch(url) {
@@ -30,15 +31,15 @@ function spoofAndroidFetch(url) {
     });
 }
 
-// DRM - Debugged and Ready
+// DRM - Debugged
 function setupDRM(hls, url) {
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
         statusEl.textContent = "Status: Manifest loaded—checking DRM!";
-        console.log("MANIFEST PARSED—LOOKING FOR DRM!");
+        console.log("MANIFEST PARSED—DRM TIME!");
     });
     hls.on(Hls.Events.KEY_LOADED, () => {
-        statusEl.textContent = "Status: DRM key in—ready to roll!";
-        console.log("DRM KEY LOADED—WE’RE IN!");
+        statusEl.textContent = "Status: DRM key in—ready to rock!";
+        console.log("DRM KEY LOADED—LET’S GO!");
     });
 
     spoofAndroidFetch(url)
@@ -75,16 +76,16 @@ function setupDRM(hls, url) {
                 };
                 console.log(`DRM DETECTED - License URL: ${licenseUrl}`);
             } else {
-                console.log("NO DRM—LET’S FUCKING GO!");
+                console.log("NO DRM—OPEN ROAD!");
             }
         })
         .catch(e => {
             console.log(`DRM FETCH FAILED: ${e}`);
-            statusEl.textContent = "Status: DRM check died—might still play!";
+            statusEl.textContent = "Status: DRM check died—try direct!";
         });
 }
 
-// Player Logic - Android Direct, UI-Driven
+// Player Logic - Android Direct
 function playM3U8(url) {
     statusEl.textContent = "Status: Loading like Android Chrome—hold tight!";
     console.log(`PLAYING URL: ${url}`);
@@ -121,7 +122,7 @@ function playM3U8(url) {
                 hls.attachMedia(player.tech_.el_);
             })
             .catch(e => {
-                statusEl.textContent = `Status: Manifest fetch bombed—${e.message}`;
+                statusEl.textContent = "Status: Fetch bombed—try 'Open Direct' for CORS!";
                 console.log(`MANIFEST FETCH FAILED: ${e}`);
             });
 
@@ -130,8 +131,8 @@ function playM3U8(url) {
             statusEl.textContent = `Status: HLS error - ${data.details}`;
             if (data.fatal) {
                 hls.destroy();
-                statusEl.textContent = "Status: Fatal crash—try again, fucker!";
-                console.log("FATAL HLS ERROR—RETRY NEEDED!");
+                statusEl.textContent = "Status: Fatal crash—use 'Open Direct'!";
+                console.log("FATAL HLS ERROR—RETRY OR DIRECT!");
             }
         });
 
@@ -161,14 +162,26 @@ function playM3U8(url) {
     }
 }
 
-// Button Handler—UI King
+// Button Handlers—Play or Direct
 playBtn.addEventListener('click', () => {
     const url = urlInput.value.trim();
     console.log(`PLAY BUTTON SMASHED: ${url}`);
     playM3U8(url);
 });
 
-// Enter Key—Smooth as Fuck
+directBtn.addEventListener('click', () => {
+    const url = urlInput.value.trim();
+    console.log(`DIRECT BUTTON SMASHED: ${url}`);
+    if (!url || !url.endsWith('.m3u8')) {
+        statusEl.textContent = "Status: Enter a valid .m3u8 URL, dipshit!";
+        console.log("INVALID URL FOR DIRECT—NEEDS .m3u8!");
+        return;
+    }
+    statusEl.textContent = "Status: Opening direct in new tab—like Android!";
+    window.open(url, '_blank');
+});
+
+// Enter Key—Play Default
 urlInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const url = urlInput.value.trim();
