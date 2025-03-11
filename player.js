@@ -1,4 +1,4 @@
-// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, DIRECT PLAYER FIX
+// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, DIRECT PLAYER FIXED
 const player = videojs('video-player', {
     html5: {
         hls: { 
@@ -162,7 +162,7 @@ function playM3U8(url) {
     }
 }
 
-// Direct Player Window - PC Fix
+// Direct Player Window - Fixed with HLS.js
 function openDirectPlayer(url) {
     const directWindow = window.open('', '_blank');
     directWindow.document.write(`
@@ -170,16 +170,33 @@ function openDirectPlayer(url) {
         <html>
         <head>
             <title>.m3u8 Direct Player</title>
+            <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
             <style>
                 body { margin: 0; background: #000; display: flex; justify-content: center; align-items: center; height: 100vh; }
-                video { width: 100%; max-width: 800px; height: auto; background: #000; }
+                .video-js { width: 100%; max-width: 800px; height: auto; background: #000; }
             </style>
         </head>
         <body>
-            <video controls autoplay>
+            <video id="direct-player" class="video-js vjs-default-skin" controls autoplay>
                 <source src="${url}" type="application/vnd.apple.mpegurl">
-                Your browser doesn’t support this video.
             </video>
+            <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+            <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
+            <script>
+                if (Hls.isSupported()) {
+                    const hls = new Hls();
+                    hls.loadSource('${url}');
+                    hls.attachMedia(document.getElementById('direct-player'));
+                    hls.on(Hls.Events.ERROR, (event, data) => {
+                        console.error('HLS Error:', data.type, data.details, data.response?.status);
+                    });
+                    hls.on(Hls.Events.MANIFEST_PARSED, () => console.log('Direct Player: Manifest loaded'));
+                } else if (document.getElementById('direct-player').canPlayType('application/vnd.apple.mpegurl')) {
+                    document.getElementById('direct-player').play();
+                } else {
+                    console.error('Direct Player: Browser doesn’t support HLS');
+                }
+            </script>
         </body>
         </html>
     `);
