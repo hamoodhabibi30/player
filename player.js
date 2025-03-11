@@ -1,4 +1,4 @@
-// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, NO PROXIES, DEBUG HEAVY
+// FUCK YEAH, ANDROID CHROME STYLE—URL INPUT, NO PROXIES, UI ENHANCED
 const player = videojs('video-player', {
     html5: {
         hls: { 
@@ -11,7 +11,7 @@ const player = videojs('video-player', {
     controls: true,
     autoplay: false,
     width: 360,
-    height: 566,
+    height: 316, // Half of 640 - 24 (status bar)
     errorDisplay: false
 });
 
@@ -30,7 +30,7 @@ function spoofAndroidFetch(url) {
     });
 }
 
-// DRM - Loud and Clear
+// DRM - Debugged and Ready
 function setupDRM(hls, url) {
     hls.on(Hls.Events.MANIFEST_PARSED, () => {
         statusEl.textContent = "Status: Manifest loaded—checking DRM!";
@@ -38,7 +38,7 @@ function setupDRM(hls, url) {
     });
     hls.on(Hls.Events.KEY_LOADED, () => {
         statusEl.textContent = "Status: DRM key in—ready to roll!";
-        console.log("DRM KEY LOADED—WE’RE GOLDEN!");
+        console.log("DRM KEY LOADED—WE’RE IN!");
     });
 
     spoofAndroidFetch(url)
@@ -66,7 +66,7 @@ function setupDRM(hls, url) {
                                 })
                                 .then(data => callback(null, new Uint8Array(data)))
                                 .catch(err => {
-                                    statusEl.textContent = `Status: DRM license fucked—${err}`;
+                                    statusEl.textContent = `Status: DRM license failed—${err}`;
                                     console.log(`DRM LICENSE FETCH FAILED: ${err}`);
                                     callback(err);
                                 });
@@ -75,7 +75,7 @@ function setupDRM(hls, url) {
                 };
                 console.log(`DRM DETECTED - License URL: ${licenseUrl}`);
             } else {
-                console.log("NO DRM—FULL SPEED AHEAD!");
+                console.log("NO DRM—LET’S FUCKING GO!");
             }
         })
         .catch(e => {
@@ -84,12 +84,12 @@ function setupDRM(hls, url) {
         });
 }
 
-// Player Logic - Android Direct, Debug On
+// Player Logic - Android Direct, UI-Driven
 function playM3U8(url) {
     statusEl.textContent = "Status: Loading like Android Chrome—hold tight!";
     console.log(`PLAYING URL: ${url}`);
     if (!url || !url.endsWith('.m3u8')) {
-        statusEl.textContent = "Status: Enter a valid .m3u8 URL, asshole!";
+        statusEl.textContent = "Status: Enter a valid .m3u8 URL, dipshit!";
         console.log("INVALID URL—NEEDS .m3u8!");
         return;
     }
@@ -130,7 +130,7 @@ function playM3U8(url) {
             statusEl.textContent = `Status: HLS error - ${data.details}`;
             if (data.fatal) {
                 hls.destroy();
-                statusEl.textContent = "Status: Fatal crash—hit play again!";
+                statusEl.textContent = "Status: Fatal crash—try again, fucker!";
                 console.log("FATAL HLS ERROR—RETRY NEEDED!");
             }
         });
@@ -155,24 +155,24 @@ function playM3U8(url) {
         video.controls = true;
         video.autoplay = true;
         video.width = 360;
-        video.height = 566;
+        video.height = 316;
         video.src = url;
         document.querySelector('.android-frame').replaceChild(video, document.getElementById('video-player'));
     }
 }
 
-// Button Handler—Debugged to Death
+// Button Handler—UI King
 playBtn.addEventListener('click', () => {
     const url = urlInput.value.trim();
-    console.log(`PLAY BUTTON HIT: ${url}`);
+    console.log(`PLAY BUTTON SMASHED: ${url}`);
     playM3U8(url);
 });
 
-// Enter Key—Extra Debug
+// Enter Key—Smooth as Fuck
 urlInput.addEventListener('keypress', (e) => {
     if (e.key === 'Enter') {
         const url = urlInput.value.trim();
-        console.log(`ENTER PRESSED: ${url}`);
+        console.log(`ENTER SMASHED: ${url}`);
         playM3U8(url);
     }
 });
