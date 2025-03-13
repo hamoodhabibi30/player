@@ -635,6 +635,7 @@
     <script>
         const API_KEY = 'AIzaSyBxoKM0jW4px_RKF_-IiL25PXzPwAI5Dno';
         const NADEKO_API = 'https://inv.nadeko.net/search?q=';
+        const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
         const allStreamsHashtags = ["soulcity", "lifeinsoulcity", "coprp", "ems", "yukshas", "fdf", "vendetta", "oni", "spades", "warlocks"];
         const mainHashtags = ["soulcity", "lifeinsoulcity"];
         const searchPhrases = ['"gta rp on soulcity"', '"gta 5 rp on soulcity"'];
@@ -780,13 +781,21 @@
                 searchButton.textContent = 'Searching...';
 
                 const searchPromises = searchTerms.map(async term => {
-                    const searchUrl = `${NADEKO_API}${encodeURIComponent(term)}`;
+                    const searchUrl = `${CORS_PROXY}${NADEKO_API}${encodeURIComponent(term)}`;
                     try {
-                        const response = await fetch(searchUrl);
+                        const response = await fetch(searchUrl, {
+                            headers: {
+                                'Origin': window.location.origin,
+                                'X-Requested-With': 'XMLHttpRequest'
+                            }
+                        });
+                        
                         if (!response.ok) {
                             throw new Error(`Failed to fetch streams: ${response.status}`);
                         }
-                        return response.json();
+                        
+                        const data = await response.json();
+                        return data;
                     } catch (error) {
                         console.error(`Error fetching for term ${term}:`, error);
                         return { items: [] };
@@ -824,7 +833,7 @@
                 displayResults(streams, selectedCategory);
             } catch (error) {
                 console.error('Error fetching streams:', error);
-                errorMessage.textContent = 'Failed to fetch streams. Please try again later.';
+                errorMessage.textContent = 'Failed to fetch streams. Please try again later. If the issue persists, you may need to visit https://cors-anywhere.herokuapp.com/corsdemo and request temporary access.';
                 errorMessage.classList.remove('hidden');
                 loadingIndicator.classList.add('hidden');
             } finally {
