@@ -2,130 +2,964 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>🔥 ANDROID CHROME .M3U8 PLAYER 🔥</title>
-    <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'><text x='0' y='14'>🎥</text></svg>" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SoulCity Live - Ecorp Streams</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            background: #121212;
-            color: #fff;
-            font-family: 'Roboto', Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #0f0f0f;
+            color: #ffffff;
             min-height: 100vh;
         }
-        .android-frame {
-            width: 360px;
-            height: 640px;
-            background: #fff;
-            border: 12px solid #000;
-            border-radius: 24px;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.9);
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+            background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+            min-height: 100vh;
+            position: relative;
             overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 50% 50%, rgba(255, 0, 0, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 3rem;
+            padding: 3rem 0;
+            background: rgba(255, 0, 0, 0.05);
+            border-radius: 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        header::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #ff0000, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+
+        .controls {
             display: flex;
-            flex-direction: column;
-        }
-        .status-bar {
-            height: 24px;
-            background: #000;
-            color: #fff;
-            font-size: 12px;
-            text-align: right;
-            padding: 5px 10px;
-            box-shadow: 0 1px 5px rgba(0, 0, 0, 0.5);
-        }
-        #video-player {
-            width: 100%;
-            height: 50%;
-            background: #000;
-            border-bottom: 1px solid #333;
-        }
-        .input-container {
-            flex: 1;
-            padding: 20px;
-            background: #f0f0f0;
-            display: flex;
-            flex-direction: column;
+            gap: 1.5rem;
             justify-content: center;
-            align-items: center;
-            gap: 15px;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2rem;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
         }
-        #url-input {
-            width: 90%;
-            padding: 12px;
-            background: #fff;
-            color: #000;
-            border: 2px solid #4285f4;
-            border-radius: 8px;
-            font-size: 16px;
-            outline: none;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            transition: border-color 0.3s;
-        }
-        #url-input:focus {
-            border-color: #5a95f5;
-        }
-        .button-group {
-            display: flex;
-            gap: 10px;
-        }
-        #play-btn, #direct-btn {
-            padding: 12px 20px;
-            background: #4285f4;
-            color: #fff;
-            border: none;
-            border-radius: 8px;
+
+        .select {
+            background: rgba(26, 26, 26, 0.8);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 200px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.5em;
+        }
+
+        .select:hover {
+            border-color: #ff0000;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .button {
+            background: linear-gradient(45deg, #ff0000, #ff6b6b);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
             text-transform: uppercase;
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
-            transition: background 0.3s, transform 0.1s;
+            letter-spacing: 0.5px;
+            min-width: 200px;
+            position: relative;
+            overflow: hidden;
         }
-        #direct-btn {
-            background: #34c759;
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
         }
-        #play-btn:hover, #direct-btn:hover {
-            background: #5a95f5;
+
+        .button:hover::before {
+            left: 100%;
+        }
+
+        .button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
+        }
+
+        .stream-card {
+            background: rgba(26, 26, 26, 0.8);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+        }
+
+        .stream-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .stream-card:hover::before {
+            opacity: 1;
+        }
+
+        .stream-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 0, 0, 0.3);
+        }
+
+        .thumbnail {
+            width: 100%;
+            aspect-ratio: 16/9;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .stream-card:hover .thumbnail {
             transform: scale(1.05);
         }
-        #direct-btn:hover {
-            background: #45d66b;
+
+        .stream-info {
+            padding: 1.5rem;
+            background: linear-gradient(to bottom, rgba(26, 26, 26, 0.8), rgba(26, 26, 26, 0.95));
         }
-        #play-btn:active, #direct-btn:active {
-            transform: scale(0.95);
+
+        .stream-title {
+            font-size: 1.3rem;
+            margin-bottom: 0.75rem;
+            font-weight: 600;
+            line-height: 1.4;
+            color: #fff;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
         }
-        #status {
-            font-size: 14px;
-            color: #666;
+
+        .channel-name {
+            color: #888;
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .live-badge {
+            background: linear-gradient(45deg, #ff0000, #ff6b6b);
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.5rem;
+            box-shadow: 0 2px 8px rgba(255, 0, 0, 0.3);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .live-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: #fff;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .tag {
+            background: rgba(255, 0, 0, 0.1);
+            color: #ff6b6b;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+            margin-bottom: 0.5rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background: rgba(255, 0, 0, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .viewers {
+            color: #888;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .viewers span {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .modal-content {
+            background: rgba(26, 26, 26, 0.98);
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 2.5rem;
+            border-radius: 24px;
+            position: relative;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            background: rgba(255, 0, 0, 0.1);
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(5px);
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 0, 0, 0.2);
+            transform: rotate(90deg) scale(1.1);
+        }
+
+        .loading {
             text-align: center;
-            margin-top: 10px;
-            word-wrap: break-word;
-            max-width: 90%;
+            padding: 4rem;
+            color: #888;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .loading::after {
+            content: '';
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 0, 0, 0.1);
+            border-top-color: #ff0000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 2rem;
+            color: #ff4444;
+            font-size: 1.2rem;
+            background: rgba(255, 68, 68, 0.1);
+            border-radius: 16px;
+            margin: 1rem 0;
+            display: none;
+            border: 1px solid rgba(255, 68, 68, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .no-streams {
+            text-align: center;
+            padding: 4rem;
+            color: #888;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .no-streams::before {
+            content: '🔍';
+            font-size: 3rem;
+        }
+
+        .live-streams {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            padding: 1rem;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .bg-yellow-500 {
+            background-color: #ffd700;
+        }
+
+        .bg-green-500 {
+            background-color: #22c55e;
+        }
+
+        .bg-red-500 {
+            background-color: #ef4444;
+        }
+
+        .text-blue-300 {
+            color: #93c5fd;
+        }
+
+        .text-blue-200 {
+            color: #bfdbfe;
+        }
+
+        .text-red-400 {
+            color: #f87171;
+        }
+
+        .text-white {
+            color: #ffffff;
+        }
+
+        .text-2xl {
+            font-size: 1.5rem;
+        }
+
+        .font-semibold {
+            font-weight: 600;
+        }
+
+        .mb-5 {
+            margin-bottom: 1.25rem;
+        }
+
+        .w-14 {
+            width: 3.5rem;
+        }
+
+        .h-14 {
+            height: 3.5rem;
+        }
+
+        .mr-4 {
+            margin-right: 1rem;
+        }
+
+        .border-2 {
+            border-width: 2px;
+        }
+
+        .border-blue-500 {
+            border-color: #3b82f6;
+        }
+
+        .rounded-full {
+            border-radius: 9999px;
+        }
+
+        .rounded-lg {
+            border-radius: 0.5rem;
+        }
+
+        .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-glow {
+            background: linear-gradient(45deg, #ff0000, #ff6b6b);
+            transition: all 0.3s ease;
+        }
+
+        .btn-glow:hover {
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+        }
+
+        .relative {
+            position: relative;
+        }
+
+        .absolute {
+            position: absolute;
+        }
+
+        .bottom-3 {
+            bottom: 0.75rem;
+        }
+
+        .right-3 {
+            right: 0.75rem;
+        }
+
+        .top-3 {
+            top: 0.75rem;
+        }
+
+        .left-3 {
+            left: 0.75rem;
+        }
+
+        .bg-black {
+            background-color: #000000;
+        }
+
+        .bg-opacity-70 {
+            background-color: rgba(0, 0, 0, 0.7);
+        }
+
+        .px-3 {
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+        }
+
+        .py-1 {
+            padding-top: 0.25rem;
+            padding-bottom: 0.25rem;
+        }
+
+        .text-sm {
+            font-size: 0.875rem;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .mt-2 {
+            margin-top: 0.5rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .font-bold {
+            font-weight: 700;
+        }
+
+        .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+
+        .px-6 {
+            padding-left: 1.5rem;
+            padding-right: 1.5rem;
+        }
+
+        .inline-block {
+            display: inline-block;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal.show {
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .controls {
+                flex-direction: column;
+                padding: 1.5rem;
+            }
+
+            .select, .button {
+                width: 100%;
+            }
+
+            .live-streams {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="android-frame">
-        <div class="status-bar">11:25 PM | 100% 🔋</div>
-        <video id="video-player" class="video-js vjs-default-skin" controls></video>
-        <div class="input-container">
-            <input id="url-input" type="text" placeholder="Enter your .m3u8 URL here">
-            <div class="button-group">
-                <button id="play-btn">PLAY</button>
-                <button id="direct-btn">OPEN DIRECT</button>
-            </div>
-            <p id="status">Status: Enter a URL to play</p>
+    <div class="container">
+        <header>
+            <h1>SoulCity Live</h1>
+            <p>Watch live streams from SoulCity</p>
+        </header>
+        
+        <div class="controls">
+            <select id="categorySelector" class="select">
+                <option value="all">All Streams</option>
+                <option value="coprp">Cop RP</option>
+                <option value="ems">EMS</option>
+            </select>
+            <select id="sortSelector" class="select">
+                <option value="views-desc">Views (High to Low)</option>
+                <option value="views-asc">Views (Low to High)</option>
+                <option value="likes-desc">Likes (High to Low)</option>
+                <option value="subs-desc">Subscribers (High to Low)</option>
+                <option value="recent">Most Recent</option>
+            </select>
+            <button id="searchButton" class="button">Search Streams</button>
+        </div>
+
+        <div id="loadingIndicator" class="loading">Loading live streams...</div>
+        <div id="resultsCount" class="no-streams hidden">
+            Found <span id="streamCount">0</span> <span id="categoryText">live streams</span>
+        </div>
+        <div id="noResults" class="no-streams hidden">No live streams found. Try another category or check back later.</div>
+        <div id="errorMessage" class="error-message hidden"></div>
+        
+        <div id="streamGrid" class="live-streams"></div>
+    </div>
+
+    <div id="streamModal" class="modal">
+        <div class="modal-content">
+            <button id="closeModal" class="close-modal">&times;</button>
+            <div id="modalContent"></div>
         </div>
     </div>
 
-    <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.7/dist/hls.min.js"></script>
-    <script src="player.js"></script>
+    <script>
+        const API_KEY = 'AIzaSyBxoKM0jW4px_RKF_-IiL25PXzPwAI5Dno';
+        const NADEKO_API = 'https://inv.nadeko.net/search?q=';
+        const allStreamsHashtags = ["soulcity", "lifeinsoulcity", "coprp", "ems", "yukshas", "fdf", "vendetta", "oni", "spades", "warlocks"];
+        const mainHashtags = ["soulcity", "lifeinsoulcity"];
+        const searchPhrases = ['"gta rp on soulcity"', '"gta 5 rp on soulcity"'];
+        const searchTerms = [...mainHashtags.map(tag => `%23${tag}`), ...searchPhrases.map(phrase => encodeURIComponent(phrase))];
+
+        let streams = [];
+        const channelCache = {};
+        let videoCategories = {};
+
+        // Global DOM elements
+        let categorySelector;
+        let sortSelector;
+        let searchButton;
+        let loadingIndicator;
+        let resultsCount;
+        let streamCount;
+        let categoryText;
+        let noResults;
+        let errorMessage;
+        let streamGrid;
+        let streamModal;
+        let closeModal;
+        let modalContent;
+
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize DOM elements
+            categorySelector = document.getElementById('categorySelector');
+            sortSelector = document.getElementById('sortSelector');
+            searchButton = document.getElementById('searchButton');
+            loadingIndicator = document.getElementById('loadingIndicator');
+            resultsCount = document.getElementById('resultsCount');
+            streamCount = document.getElementById('streamCount');
+            categoryText = document.getElementById('categoryText');
+            noResults = document.getElementById('noResults');
+            errorMessage = document.getElementById('errorMessage');
+            streamGrid = document.getElementById('streamGrid');
+            streamModal = document.getElementById('streamModal');
+            closeModal = document.getElementById('closeModal');
+            modalContent = document.getElementById('modalContent');
+
+            // Check if any required elements are missing
+            const missingElements = [];
+            if (!categorySelector) missingElements.push('categorySelector');
+            if (!sortSelector) missingElements.push('sortSelector');
+            if (!searchButton) missingElements.push('searchButton');
+            if (!loadingIndicator) missingElements.push('loadingIndicator');
+            if (!resultsCount) missingElements.push('resultsCount');
+            if (!streamCount) missingElements.push('streamCount');
+            if (!categoryText) missingElements.push('categoryText');
+            if (!noResults) missingElements.push('noResults');
+            if (!errorMessage) missingElements.push('errorMessage');
+            if (!streamGrid) missingElements.push('streamGrid');
+            if (!streamModal) missingElements.push('streamModal');
+            if (!closeModal) missingElements.push('closeModal');
+            if (!modalContent) missingElements.push('modalContent');
+
+            if (missingElements.length > 0) {
+                console.error('Missing required elements:', missingElements.join(', '));
+                errorMessage.textContent = `Error: Missing required elements: ${missingElements.join(', ')}`;
+                errorMessage.classList.remove('hidden');
+                return;
+            }
+
+            // Add event listeners
+            searchButton.addEventListener('click', searchStreams);
+            sortSelector.addEventListener('change', searchStreams);
+            closeModal.addEventListener('click', () => {
+                streamModal.classList.remove('show');
+                streamModal.classList.add('hidden');
+            });
+
+            streamModal.addEventListener('click', (e) => {
+                if (e.target === streamModal) {
+                    streamModal.classList.remove('show');
+                    streamModal.classList.add('hidden');
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !streamModal.classList.contains('hidden')) {
+                    streamModal.classList.remove('show');
+                    streamModal.classList.add('hidden');
+                }
+            });
+
+            // Initialize the application
+            init();
+        });
+
+        function formatViewCount(count) {
+            if (!count) return 'N/A';
+            if (count >= 1000000) return (count / 1000000).toFixed(1) + 'M';
+            if (count >= 1000) return (count / 1000).toFixed(1) + 'K';
+            return count;
+        }
+
+        function timeAgo(date) {
+            const seconds = Math.floor((new Date() - date) / 1000);
+            if (seconds / 31536000 > 1) return Math.floor(seconds / 31536000) + " years ago";
+            if (seconds / 2592000 > 1) return Math.floor(seconds / 2592000) + " months ago";
+            if (seconds / 86400 > 1) return Math.floor(seconds / 86400) + " days ago";
+            if (seconds / 3600 > 1) return Math.floor(seconds / 3600) + " hours ago";
+            if (seconds / 60 > 1) return Math.floor(seconds / 60) + " minutes ago";
+            return "just now";
+        }
+
+        function searchStreams() {
+            const selectedCategory = categorySelector.value;
+            const sortBy = sortSelector.value;
+            const categoryId = "20"; // Gaming category
+            let additionalFilter = null;
+            if (selectedCategory === "coprp") {
+                additionalFilter = (text) => ["cop", "police", "law enforcement", "patrol", "officer", "detective", "sheriff"]
+                    .some(keyword => text.toLowerCase().includes(keyword));
+            } else if (selectedCategory === "ems") {
+                additionalFilter = (text) => ["ems", "emergency", "medic", "paramedic", "ambulance", "firefighter"]
+                    .some(keyword => text.toLowerCase().includes(keyword));
+            }
+
+            streamGrid.innerHTML = '';
+            resultsCount.classList.add('hidden');
+            noResults.classList.add('hidden');
+            errorMessage.classList.add('hidden');
+            loadingIndicator.classList.remove('hidden');
+            searchButton.disabled = true;
+            searchButton.textContent = 'Searching...';
+
+            fetchLiveStreams(categoryId, additionalFilter, selectedCategory, sortBy);
+        }
+
+        function displayNoResults() {
+            noResults.classList.remove('hidden');
+            loadingIndicator.classList.add('hidden');
+            resultsCount.classList.add('hidden');
+        }
+
+        async function fetchLiveStreams(categoryId, additionalFilter, selectedCategory, sortBy) {
+            try {
+                streamGrid.innerHTML = '';
+                loadingIndicator.classList.remove('hidden');
+                searchButton.disabled = true;
+                searchButton.textContent = 'Searching...';
+
+                const searchPromises = searchTerms.map(async term => {
+                    const searchUrl = `${NADEKO_API}${encodeURIComponent(term)}`;
+                    try {
+                        const response = await fetch(searchUrl);
+                        if (!response.ok) {
+                            throw new Error(`Failed to fetch streams: ${response.status}`);
+                        }
+                        return response.json();
+                    } catch (error) {
+                        console.error(`Error fetching for term ${term}:`, error);
+                        return { items: [] };
+                    }
+                });
+
+                const results = await Promise.all(searchPromises);
+                const allStreams = results.flatMap(result => result.items || []);
+
+                // Filter and process streams
+                streams = allStreams.filter(stream => {
+                    const title = stream.title?.toLowerCase() || '';
+                    const description = stream.description?.toLowerCase() || '';
+                    const text = `${title} ${description}`;
+
+                    // Apply SoulCity RP filter
+                    const isSoulCityStream = isSoulCityRPStream(stream);
+
+                    // Apply category filter if specified
+                    if (selectedCategory === "coprp") {
+                        return isSoulCityStream && ["cop", "police", "law enforcement", "patrol", "officer", "detective", "sheriff"]
+                            .some(keyword => text.includes(keyword));
+                    } else if (selectedCategory === "ems") {
+                        return isSoulCityStream && ["ems", "emergency", "medic", "paramedic", "ambulance", "firefighter"]
+                            .some(keyword => text.includes(keyword));
+                    }
+
+                    return isSoulCityStream;
+                });
+
+                // Sort streams
+                streams = await sortStreams(streams, sortBy);
+
+                // Display results
+                displayResults(streams, selectedCategory);
+            } catch (error) {
+                console.error('Error fetching streams:', error);
+                errorMessage.textContent = 'Failed to fetch streams. Please try again later.';
+                errorMessage.classList.remove('hidden');
+                loadingIndicator.classList.add('hidden');
+            } finally {
+                searchButton.disabled = false;
+                searchButton.textContent = 'Search Streams';
+            }
+        }
+
+        function isSoulCityRPStream(stream) {
+            const title = (stream.title || '').toLowerCase();
+            const description = (stream.description || '').toLowerCase();
+            const text = `${title} ${description}`;
+
+            return allStreamsHashtags.some(tag => text.includes(`#${tag.toLowerCase()}`)) ||
+                   searchPhrases.some(phrase => text.includes(phrase.toLowerCase().replace(/"/g, '')));
+        }
+
+        function sortStreams(streamsArray, sortBy) {
+            switch (sortBy) {
+                case 'views-desc':
+                    return streamsArray.sort((a, b) => (b.viewers || 0) - (a.viewers || 0));
+                case 'views-asc':
+                    return streamsArray.sort((a, b) => (a.viewers || 0) - (b.viewers || 0));
+                case 'likes-desc':
+                    return streamsArray.sort((a, b) => (b.likes || 0) - (a.likes || 0));
+                case 'recent':
+                    return streamsArray.sort((a, b) => new Date(b.startTime) - new Date(a.startTime));
+                default:
+                    return streamsArray;
+            }
+        }
+
+        function displayResults(streamsArray, selectedCategory) {
+            streams = streamsArray;
+            loadingIndicator.classList.add('hidden');
+            streamGrid.innerHTML = '';
+
+            if (streams.length === 0) {
+                displayNoResults();
+                return;
+            }
+
+            streamCount.textContent = streams.length;
+            categoryText.textContent = selectedCategory === "all" ? 'live SoulCity RP streams' : 
+                                     selectedCategory === "coprp" ? 'live cop roleplay streams' : 'live EMS streams';
+            resultsCount.classList.remove('hidden');
+
+            streams.forEach(stream => {
+                const streamCard = document.createElement('div');
+                streamCard.className = 'stream-card';
+
+                const title = stream.title || 'Untitled Stream';
+                const channelName = stream.channelName || 'Unknown Channel';
+                const thumbnail = stream.thumbnail || 'https://via.placeholder.com/640x360';
+                const videoId = stream.id;
+                const viewCount = stream.viewers || 0;
+                const likeCount = stream.likes || 0;
+                const startTime = new Date(stream.startTime);
+                const relativeTime = timeAgo(startTime);
+                const tags = allStreamsHashtags.filter(tag => 
+                    (title + " " + (stream.description || "")).toLowerCase().includes(`#${tag.toLowerCase()}`)).slice(0, 3);
+
+                streamCard.innerHTML = `
+                    <div class="relative">
+                        <img src="${thumbnail}" alt="${title}" class="thumbnail">
+                        <div class="absolute bottom-3 right-3 bg-black bg-opacity-70 text-white px-3 py-1 rounded-full text-sm font-medium">
+                            ${formatViewCount(viewCount)} watching
+                        </div>
+                        <div class="absolute top-3 left-3 live-badge">LIVE</div>
+                    </div>
+                    <div class="stream-info">
+                        <h3 class="stream-title">${title}</h3>
+                        <p class="channel-name">${channelName}</p>
+                        <div class="mt-2">
+                            ${tags.map(tag => `<span class="tag">#${tag}</span>`).join('')}
+                        </div>
+                        <p class="viewers mt-2">Started ${relativeTime} | Likes: ${formatViewCount(likeCount)}</p>
+                    </div>
+                `;
+
+                streamCard.addEventListener('click', () => openStreamModal(videoId));
+                streamGrid.appendChild(streamCard);
+            });
+        }
+
+        async function openStreamModal(videoId) {
+            modalContent.innerHTML = '<p class="text-blue-300">Loading stream details...</p>';
+            streamModal.classList.remove('hidden');
+            streamModal.classList.add('show');
+
+            const stream = streams.find(s => s.id === videoId);
+            if (!stream) {
+                modalContent.innerHTML = '<p class="text-red-400">Stream not found.</p>';
+                return;
+            }
+
+            displayStreamDetails(stream);
+        }
+
+        function displayStreamDetails(stream) {
+            const title = stream.title || 'Untitled Stream';
+            const description = stream.description || 'No description available.';
+            const thumbnail = stream.thumbnail || 'https://via.placeholder.com/640x360';
+            const channelName = stream.channelName || 'Unknown Channel';
+            const viewCount = stream.viewers || 0;
+            const likeCount = stream.likes || 0;
+            const startTime = new Date(stream.startTime);
+
+            modalContent.innerHTML = `
+                <h3 class="text-2xl font-semibold text-white mb-5">${title}</h3>
+                <div class="mb-5">
+                    <img src="${thumbnail}" alt="${title}" class="w-full rounded-lg shadow-md">
+                </div>
+                <p class="text-blue-200 mb-5">${description}</p>
+                <div class="flex items-center mb-5">
+                    <div>
+                        <p class="text-white font-medium text-lg">${channelName}</p>
+                    </div>
+                </div>
+                <p class="text-blue-300 text-sm mb-3">Started: ${startTime.toLocaleString()}</p>
+                <p class="text-blue-300 text-sm mb-3">Viewers: ${formatViewCount(viewCount)}</p>
+                <p class="text-blue-300 text-sm mb-5">Likes: ${formatViewCount(likeCount)}</p>
+                <a href="${stream.url}" target="_blank" class="btn-glow text-white font-bold py-3 px-6 rounded-full inline-block">Watch Stream</a>
+            `;
+        }
+
+        async function init() {
+            try {
+                searchStreams();
+            } catch (error) {
+                console.error('Error initializing:', error);
+                errorMessage.textContent = 'Failed to initialize the application. Please try again later.';
+                errorMessage.classList.remove('hidden');
+            }
+        }
+    </script>
 </body>
 </html>
