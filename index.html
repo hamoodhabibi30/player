@@ -636,6 +636,7 @@
         const API_KEY = 'AIzaSyBxoKM0jW4px_RKF_-IiL25PXzPwAI5Dno';
         const NADEKO_API = 'https://inv.nadeko.net/search?q=';
         const CORS_PROXY = 'https://cors-anywhere.herokuapp.com/';
+        const CORS_DEMO_URL = 'https://cors-anywhere.herokuapp.com/corsdemo';
         const allStreamsHashtags = ["soulcity", "lifeinsoulcity", "coprp", "ems", "yukshas", "fdf", "vendetta", "oni", "spades", "warlocks"];
         const mainHashtags = ["soulcity", "lifeinsoulcity"];
         const searchPhrases = ['"gta rp on soulcity"', '"gta 5 rp on soulcity"'];
@@ -773,12 +774,45 @@
             resultsCount.classList.add('hidden');
         }
 
+        // Add a function to check CORS proxy access
+        async function checkCorsProxyAccess() {
+            try {
+                const response = await fetch(`${CORS_PROXY}https://api.github.com/zen`, {
+                    headers: {
+                        'Origin': window.location.origin,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                return response.ok;
+            } catch (error) {
+                return false;
+            }
+        }
+
         async function fetchLiveStreams(categoryId, additionalFilter, selectedCategory, sortBy) {
             try {
                 streamGrid.innerHTML = '';
                 loadingIndicator.classList.remove('hidden');
                 searchButton.disabled = true;
                 searchButton.textContent = 'Searching...';
+
+                // Check CORS proxy access first
+                const hasCorsAccess = await checkCorsProxyAccess();
+                if (!hasCorsAccess) {
+                    errorMessage.innerHTML = `
+                        <div>
+                            <p>To use this application, you need to enable CORS proxy access:</p>
+                            <ol style="text-align: left; margin-top: 1rem;">
+                                <li>Visit <a href="${CORS_DEMO_URL}" target="_blank" style="color: #ff6b6b;">${CORS_DEMO_URL}</a></li>
+                                <li>Click the button to request temporary access</li>
+                                <li>Come back here and refresh the page</li>
+                            </ol>
+                        </div>
+                    `;
+                    errorMessage.classList.remove('hidden');
+                    loadingIndicator.classList.add('hidden');
+                    return;
+                }
 
                 const searchPromises = searchTerms.map(async term => {
                     const searchUrl = `${CORS_PROXY}${NADEKO_API}${encodeURIComponent(term)}`;
@@ -791,6 +825,9 @@
                         });
                         
                         if (!response.ok) {
+                            if (response.status === 403) {
+                                throw new Error('CORS proxy access denied. Please visit the demo page to request access.');
+                            }
                             throw new Error(`Failed to fetch streams: ${response.status}`);
                         }
                         
@@ -833,7 +870,7 @@
                 displayResults(streams, selectedCategory);
             } catch (error) {
                 console.error('Error fetching streams:', error);
-                errorMessage.textContent = 'Failed to fetch streams. Please try again later. If the issue persists, you may need to visit https://cors-anywhere.herokuapp.com/corsdemo and request temporary access.';
+                errorMessage.textContent = 'Failed to fetch streams. Please try again later.';
                 errorMessage.classList.remove('hidden');
                 loadingIndicator.classList.add('hidden');
             } finally {
